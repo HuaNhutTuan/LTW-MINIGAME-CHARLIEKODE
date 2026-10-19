@@ -15,6 +15,9 @@ namespace game_lật_thẻ_1._1
             if (cboTheme.Items.Count > 0)
                 cboTheme.SelectedIndex = 0;
 
+            if (cboTimeLimit.Items.Count > 0)
+                cboTimeLimit.SelectedIndex = 1; // Mặc định: 1 phút
+
             // Bước 1 hiển thị, bước 2 ẩn
             pnlStep1.Visible = true;
             pnlStep1.BringToFront();
@@ -155,6 +158,18 @@ namespace game_lật_thẻ_1._1
             bool enablePreview = chkPreview.Checked;
             bool isHardcore = chkHardcore.Checked && selectedMode == GameMode.SequentialOrder;
 
+            // Lấy thời gian đã chọn (0 = vô hạn)
+            int timeLimitSeconds = 60; // Mặc định 1 phút
+            string timeChoice = cboTimeLimit.SelectedItem?.ToString() ?? "1 phút";
+            switch (timeChoice)
+            {
+                case "30 giây": timeLimitSeconds = 30; break;
+                case "1 phút": timeLimitSeconds = 60; break;
+                case "2 phút": timeLimitSeconds = 120; break;
+                case "3 phút": timeLimitSeconds = 180; break;
+                case "Vô hạn": timeLimitSeconds = 0; break;
+            }
+
             // Ràng buộc cho chế độ Trí nhớ: tổng phải chẵn
             if (selectedMode == GameMode.MemoryMatch && (rows * cols) % 2 != 0)
             {
@@ -166,7 +181,7 @@ namespace game_lật_thẻ_1._1
                 return;
             }
 
-            FormGame frmGame = new FormGame(selectedMode, rows, cols, selectedTheme, enablePreview, isHardcore);
+            FormGame frmGame = new FormGame(selectedMode, rows, cols, selectedTheme, enablePreview, isHardcore, timeLimitSeconds);
             this.Hide();
             frmGame.ShowDialog();
             this.Show();

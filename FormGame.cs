@@ -14,6 +14,8 @@ namespace game_lật_thẻ_1._1
         private readonly string theme;
         private readonly bool enablePreview;
         private readonly bool isHardcore;
+        private readonly int timeLimitSeconds;      // Thời gian giới hạn (giây), 0 = vô hạn
+        private readonly bool isUnlimitedTime;      // true nếu chơi vô hạn thời gian
 
         // --- TRẠNG THÁI HIỆN TẠI ---
         private int currentLevel = 1;
@@ -71,7 +73,7 @@ namespace game_lật_thẻ_1._1
             "⚡", "✨", "🎵", "❤️", "⭐", "🎉", "🏆", "🥇"
         };
 
-        public FormGame(GameMode mode, int initialRows, int initialCols, string selectedTheme, bool preview = true, bool hardcore = false)
+        public FormGame(GameMode mode, int initialRows, int initialCols, string selectedTheme, bool preview = true, bool hardcore = false, int timeLimit = 60)
         {
             InitializeComponent();
 
@@ -81,6 +83,8 @@ namespace game_lật_thẻ_1._1
             this.theme = selectedTheme;
             this.enablePreview = preview;
             this.isHardcore = hardcore;
+            this.timeLimitSeconds = timeLimit;
+            this.isUnlimitedTime = (timeLimit <= 0);
 
             // Gắn sự kiện các Timer
             tmrPreview.Tick += tmrPreview_Tick;
@@ -173,13 +177,25 @@ namespace game_lật_thẻ_1._1
             int totalCards = rows * cols;
             List<int> cardValues = GenerateShuffledValues(totalCards);
 
-            // 3. Tính toán thời gian màn chơi: mỗi thẻ 3 giây (tối thiểu 18s)
-            maxTime = Math.Max(18, totalCards * 3);
-            remainingTime = maxTime;
-
-            prgTime.Minimum = 0;
-            prgTime.Maximum = maxTime;
-            prgTime.Value = remainingTime;
+            // 3. Thiết lập thời gian theo cấu hình người chơi
+            if (isUnlimitedTime)
+            {
+                // Chế độ vô hạn: ẩn thanh thời gian
+                maxTime = 0;
+                remainingTime = 0;
+                prgTime.Visible = false;
+                lblTime.Text = "⏱ Thời gian: Vô hạn";
+                lblTime.ForeColor = Color.DarkGreen;
+            }
+            else
+            {
+                maxTime = timeLimitSeconds;
+                remainingTime = maxTime;
+                prgTime.Visible = true;
+                prgTime.Minimum = 0;
+                prgTime.Maximum = maxTime;
+                prgTime.Value = remainingTime;
+            }
 
             // 4. Sinh ma trận thẻ bài động trên Panel
             int spacing = 6;
@@ -235,10 +251,13 @@ namespace game_lật_thẻ_1._1
             else
             {
                 isBusy = false;
-                lblTime.ForeColor = Color.Black;
-                lblTime.Text = $"Thời gian: {remainingTime}s";
-                tmrCountdown.Interval = 1000;
-                tmrCountdown.Start();
+                if (!isUnlimitedTime)
+                {
+                    lblTime.ForeColor = Color.Black;
+                    lblTime.Text = $"Thời gian: {remainingTime}s";
+                    tmrCountdown.Interval = 1000;
+                    tmrCountdown.Start();
+                }
             }
         }
 
@@ -258,10 +277,19 @@ namespace game_lật_thẻ_1._1
             pnlBoard.ResumeLayout();
 
             isBusy = false;
-            lblTime.ForeColor = Color.Black;
-            lblTime.Text = $"Thời gian: {remainingTime}s";
-            tmrCountdown.Interval = 1000;
-            tmrCountdown.Start();
+
+            if (isUnlimitedTime)
+            {
+                lblTime.Text = "⏱ Thời gian: Vô hạn";
+                lblTime.ForeColor = Color.DarkGreen;
+            }
+            else
+            {
+                lblTime.ForeColor = Color.Black;
+                lblTime.Text = $"Thời gian: {remainingTime}s";
+                tmrCountdown.Interval = 1000;
+                tmrCountdown.Start();
+            }
         }
 
         // Đồng hồ đếm ngược mỗi giây

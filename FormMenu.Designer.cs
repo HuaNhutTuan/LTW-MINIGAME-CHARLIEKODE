@@ -44,6 +44,8 @@ namespace game_lật_thẻ_1._1
 
             this.lblTheme = new System.Windows.Forms.Label();
             this.cboTheme = new System.Windows.Forms.ComboBox();
+            this.lblTimeLimit = new System.Windows.Forms.Label();
+            this.cboTimeLimit = new System.Windows.Forms.ComboBox();
             this.chkPreview = new System.Windows.Forms.CheckBox();
             this.chkHardcore = new System.Windows.Forms.CheckBox();
 
@@ -149,6 +151,8 @@ namespace game_lật_thẻ_1._1
             this.pnlStep2.Controls.Add(this.lblX);
             this.pnlStep2.Controls.Add(this.numCols);
             this.pnlStep2.Controls.Add(this.lblSizeNote);
+            this.pnlStep2.Controls.Add(this.lblTimeLimit);
+            this.pnlStep2.Controls.Add(this.cboTimeLimit);
             this.pnlStep2.Controls.Add(this.lblTheme);
             this.pnlStep2.Controls.Add(this.cboTheme);
             this.pnlStep2.Controls.Add(this.chkPreview);
@@ -280,10 +284,34 @@ namespace game_lật_thẻ_1._1
             this.lblSizeNote.Size = new System.Drawing.Size(200, 20);
             this.lblSizeNote.Text = "";
 
+            // lblTimeLimit
+            this.lblTimeLimit.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
+            this.lblTimeLimit.ForeColor = System.Drawing.Color.FromArgb(60, 60, 60);
+            this.lblTimeLimit.Location = new System.Drawing.Point(30, 250);
+            this.lblTimeLimit.Name = "lblTimeLimit";
+            this.lblTimeLimit.Size = new System.Drawing.Size(110, 22);
+            this.lblTimeLimit.Text = "Thời gian:";
+
+            // cboTimeLimit
+            this.cboTimeLimit.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cboTimeLimit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTimeLimit.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.cboTimeLimit.FormattingEnabled = true;
+            this.cboTimeLimit.Items.AddRange(new object[] {
+                "30 giây",
+                "1 phút",
+                "2 phút",
+                "3 phút",
+                "Vô hạn"
+            });
+            this.cboTimeLimit.Location = new System.Drawing.Point(150, 248);
+            this.cboTimeLimit.Name = "cboTimeLimit";
+            this.cboTimeLimit.Size = new System.Drawing.Size(200, 25);
+
             // lblTheme
             this.lblTheme.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
             this.lblTheme.ForeColor = System.Drawing.Color.FromArgb(60, 60, 60);
-            this.lblTheme.Location = new System.Drawing.Point(30, 255);
+            this.lblTheme.Location = new System.Drawing.Point(30, 288);
             this.lblTheme.Name = "lblTheme";
             this.lblTheme.Size = new System.Drawing.Size(120, 22);
             this.lblTheme.Text = "Chủ đề:";
@@ -300,7 +328,7 @@ namespace game_lật_thẻ_1._1
                 "Ký hiệu học thuật",
                 "Biểu tượng vui vẻ"
             });
-            this.cboTheme.Location = new System.Drawing.Point(150, 253);
+            this.cboTheme.Location = new System.Drawing.Point(150, 286);
             this.cboTheme.Name = "cboTheme";
             this.cboTheme.Size = new System.Drawing.Size(200, 25);
 
@@ -311,7 +339,7 @@ namespace game_lật_thẻ_1._1
             this.chkPreview.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkPreview.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.chkPreview.ForeColor = System.Drawing.Color.FromArgb(60, 60, 60);
-            this.chkPreview.Location = new System.Drawing.Point(33, 295);
+            this.chkPreview.Location = new System.Drawing.Point(33, 325);
             this.chkPreview.Name = "chkPreview";
             this.chkPreview.Size = new System.Drawing.Size(250, 21);
             this.chkPreview.Text = "Nhìn trước 2 giây khi bắt đầu";
@@ -323,7 +351,7 @@ namespace game_lật_thẻ_1._1
             this.chkHardcore.Enabled = false;
             this.chkHardcore.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.chkHardcore.ForeColor = System.Drawing.Color.DarkRed;
-            this.chkHardcore.Location = new System.Drawing.Point(33, 322);
+            this.chkHardcore.Location = new System.Drawing.Point(33, 352);
             this.chkHardcore.Name = "chkHardcore";
             this.chkHardcore.Size = new System.Drawing.Size(330, 21);
             this.chkHardcore.Text = "🔥 Hardcore (sai 1 bước = reset toàn bàn)";
@@ -336,7 +364,7 @@ namespace game_lật_thẻ_1._1
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStart.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold);
             this.btnStart.ForeColor = System.Drawing.Color.White;
-            this.btnStart.Location = new System.Drawing.Point(30, 370);
+            this.btnStart.Location = new System.Drawing.Point(30, 400);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(300, 50);
             this.btnStart.Text = "▶  BẮT ĐẦU CHƠI";
@@ -350,7 +378,7 @@ namespace game_lật_thẻ_1._1
             this.btnBackStep2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnBackStep2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnBackStep2.ForeColor = System.Drawing.Color.FromArgb(100, 100, 100);
-            this.btnBackStep2.Location = new System.Drawing.Point(345, 378);
+            this.btnBackStep2.Location = new System.Drawing.Point(345, 408);
             this.btnBackStep2.Name = "btnBackStep2";
             this.btnBackStep2.Size = new System.Drawing.Size(105, 40);
             this.btnBackStep2.Text = "← Quay lại";
@@ -363,7 +391,7 @@ namespace game_lật_thẻ_1._1
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(247, 250, 253);
-            this.ClientSize = new System.Drawing.Size(480, 440);
+            this.ClientSize = new System.Drawing.Size(480, 480);
             this.Controls.Add(this.pnlStep2);
             this.Controls.Add(this.pnlStep1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -407,6 +435,8 @@ namespace game_lật_thẻ_1._1
         private System.Windows.Forms.Label lblSizeNote;
         private System.Windows.Forms.Label lblTheme;
         private System.Windows.Forms.ComboBox cboTheme;
+        private System.Windows.Forms.Label lblTimeLimit;
+        private System.Windows.Forms.ComboBox cboTimeLimit;
         private System.Windows.Forms.CheckBox chkPreview;
         private System.Windows.Forms.CheckBox chkHardcore;
         private System.Windows.Forms.Button btnStart;
