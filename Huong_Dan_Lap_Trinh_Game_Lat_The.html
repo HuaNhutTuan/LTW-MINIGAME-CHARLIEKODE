@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hướng Dẫn Lập Trình Game Lật Thẻ Đa Năng - C# WinForms</title>
+<style>
+    @page {
+        size: A4;
+        margin: 16mm 14mm 16mm 14mm;
+    }
+    body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Tahoma, Arial, sans-serif;
+        color: #24292f;
+        line-height: 1.55;
+        font-size: 13.5px;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+    }
+    .header-banner {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        color: #ffffff;
+        padding: 24px 28px;
+        border-radius: 10px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+    }
+    .header-banner h1 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .header-banner p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.92;
+    }
+    h2 {
+        color: #1e3a8a;
+        font-size: 17px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 6px;
+        margin-top: 26px;
+        margin-bottom: 14px;
+        page-break-after: avoid;
+    }
+    h3 {
+        color: #0f172a;
+        font-size: 14.5px;
+        margin-top: 18px;
+        margin-bottom: 8px;
+        page-break-after: avoid;
+    }
+    p, ul, ol {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    ul, ol {
+        padding-left: 22px;
+    }
+    li {
+        margin-bottom: 4px;
+    }
+    code {
+        font-family: Consolas, "Courier New", monospace;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 12.5px;
+        border: 1px solid #e2e8f0;
+    }
+    pre {
+        background-color: #0f172a;
+        color: #f8fafc;
+        padding: 12px 14px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 11.8px;
+        line-height: 1.45;
+        margin: 10px 0 14px 0;
+        page-break-inside: avoid;
+    }
+    pre code {
+        background: transparent;
+        color: inherit;
+        padding: 0;
+        border: none;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 16px 0;
+        font-size: 12.5px;
+        page-break-inside: avoid;
+    }
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 7px 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #f1f5f9;
+        color: #1e293b;
+        font-weight: 700;
+    }
+    tr:nth-child(even) td {
+        background-color: #f8fafc;
+    }
+    .badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+    }
+    .badge-blue { background-color: #3b82f6; }
+    .badge-green { background-color: #10b981; }
+    .badge-orange { background-color: #f59e0b; }
+    .badge-red { background-color: #ef4444; }
+    .callout {
+        border-left: 4px solid #3b82f6;
+        background-color: #eff6ff;
+        padding: 10px 14px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 12.5px;
+        page-break-inside: avoid;
+    }
+    .callout-title {
+        font-weight: bold;
+        color: #1e40af;
+        margin-bottom: 4px;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+</style>
+</head>
+<body>
+
+<div class="header-banner">
+    <h1>🃏 HƯỚNG DẪN XÂY DỰNG ỨNG DỤNG GAME LẬT THẺ</h1>
+    <p>Tài liệu chi tiết: Kéo thả Toolbox, Cân chỉnh Layout & Màu sắc, Phân tích toàn bộ Logic Code WinForms C#</p>
+</div>
+
+<h2>MỤC LỤC & TỔNG QUAN KIẾN TRÚC</h2>
+<p>Ứng dụng được thiết kế theo mô hình chuẩn của Windows Forms với các thành phần cốt lõi:</p>
+<ol>
+    <li><strong>GameMode.cs</strong>: Enum định danh 2 chế độ chơi (Ghép cặp trí nhớ &amp; Lật số tiến lên).</li>
+    <li><strong>FormMenu.cs</strong>: Màn hình chọn chế độ &amp; cấu hình độ khó, được xây dựng theo mô hình 2 Panel lồng nhau (không cần mở thêm Form trung gian).</li>
+    <li><strong>FormGame.cs</strong>: Màn chơi chính hiển thị Header thông tin và sinh động ma trận thẻ bài trên Panel.</li>
+</ol>
+
+<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+<h2>GIAI ĐOẠN 1: TẠO DỰ ÁN & ĐỊNH NGHĨA ENUM CHẾ ĐỘ CHƠI</h2>
+<p>Khởi tạo Project <strong>Windows Forms App</strong> (.NET Framework hoặc .NET 8 C#). Tạo tệp <code>GameMode.cs</code>:</p>
+<pre><code>using System;
+
+namespace game_lat_the
+{
+    public enum GameMode
+    {
+        MemoryMatch,     // Game 1: Lật thẻ ghép cặp trí nhớ (tìm 2 hình/icon giống nhau)
+        SequentialOrder  // Game 2: Lật thẻ theo số tiến lên (1 -> 2 -> 3 -> ... -> N)
+    }
+}</code></pre>
+
+<h2>GIAI ĐOẠN 2: THIẾT KẾ FORM MENU (FormMenu)</h2>
+<p>FormMenu sử dụng kỹ thuật <strong>2 Panel xếp chồng</strong> (<code>pnlStep1</code> và <code>pnlStep2</code>) cùng thiết lập thuộc tính <code>Dock = Fill</code>:</p>
+<ul>
+    <li>Khi khởi động: <code>pnlStep1</code> hiện ra, <code>pnlStep2</code> ẩn.</li>
+    <li>Khi người dùng click chọn chế độ: <code>pnlStep1</code> ẩn, <code>pnlStep2</code> hiện lên và gọi <code>BringToFront()</code>.</li>
+</ul>
+
+<h3>1. Thiết lập chung của FormMenu (Properties)</h3>
+<ul>
+    <li><strong>ClientSize</strong>: <code>480, 440</code> | <strong>FormBorderStyle</strong>: <code>FixedSingle</code> | <strong>MaximizeBox</strong>: <code>False</code></li>
+    <li><strong>StartPosition</strong>: <code>CenterScreen</code> | <strong>Font</strong>: <code>Segoe UI, 9pt</code> | <strong>BackColor</strong>: <code>247, 250, 253</code></li>
+</ul>
+
+<h3>2. Danh sách Control trên Bước 1 (pnlStep1)</h3>
+<table>
+    <tr>
+        <th>Tên Control</th>
+        <th>Loại Control</th>
+        <th>Text / Nội dung</th>
+        <th>Thông số Căn chỉnh &amp; Màu sắc</th>
+    </tr>
+    <tr>
+        <td><code>lblTitle</code></td>
+        <td>Label</td>
+        <td>🃏 GAME LẬT THẺ</td>
+        <td>Font: <code>Segoe UI, 20pt, Bold</code> | ForeColor: <code>MidnightBlue</code> | TextAlign: <code>MiddleCenter</code></td>
+    </tr>
+    <tr>
+        <td><code>lblSubtitle</code></td>
+        <td>Label</td>
+        <td>Chọn chế độ chơi bạn muốn:</td>
+        <td>Font: <code>Segoe UI, 10pt</code> | ForeColor: <code>Gray</code> | TextAlign: <code>MiddleCenter</code></td>
+    </tr>
+    <tr>
+        <td><code>btnModeMemory</code></td>
+        <td>Button</td>
+        <td>🧠 Lật Thẻ Trí Nhớ<br><small>Tìm các cặp thẻ giống nhau</small></td>
+        <td>Size: <code>(380, 80)</code> | BackColor: <code>RGB(52, 120, 246)</code> | ForeColor: <code>White</code><br>FlatStyle: <code>Flat</code> | BorderSize: <code>0</code> | Cursor: <code>Hand</code></td>
+    </tr>
+    <tr>
+        <td><code>btnModeSequence</code></td>
+        <td>Button</td>
+        <td>🔢 Lật Thẻ Theo Thứ Tự<br><small>Lật từ 1 → 2 → 3 → ... → N</small></td>
+        <td>Size: <code>(380, 80)</code> | BackColor: <code>RGB(76, 175, 80)</code> | ForeColor: <code>White</code><br>FlatStyle: <code>Flat</code> | BorderSize: <code>0</code> | Cursor: <code>Hand</code></td>
+    </tr>
+    <tr>
+        <td><code>btnExitStep1</code></td>
+        <td>Button</td>
+        <td>Thoát</td>
+        <td>Size: <code>(130, 40)</code> | BackColor: <code>RGB(235, 238, 242)</code> | ForeColor: <code>RGB(100, 100, 100)</code></td>
+    </tr>
+</table>
+
+<h3>3. Danh sách Control trên Bước 2 (pnlStep2)</h3>
+<table>
+    <tr>
+        <th>Nhóm chức năng</th>
+        <th>Tên Control</th>
+        <th>Loại</th>
+        <th>Thiết lập nổi bật</th>
+    </tr>
+    <tr>
+        <td rowspan="3"><strong>Chọn nhanh độ khó</strong></td>
+        <td><code>btnEasy</code></td>
+        <td>Button</td>
+        <td>Text: "Dễ (3 × 4)" | BackColor: <code>RGB(76, 175, 80)</code> (Xanh lá)</td>
+    </tr>
+    <tr>
+        <td><code>btnMedium</code></td>
+        <td>Button</td>
+        <td>Text: "Trung bình (4 × 4)" | BackColor: <code>RGB(255, 152, 0)</code> (Cam)</td>
+    </tr>
+    <tr>
+        <td><code>btnHard</code></td>
+        <td>Button</td>
+        <td>Text: "Khó (6 × 6)" | BackColor: <code>RGB(244, 67, 54)</code> (Đỏ)</td>
+    </tr>
+    <tr>
+        <td rowspan="3"><strong>Tùy chỉnh ma trận</strong></td>
+        <td><code>numRows</code>, <code>numCols</code></td>
+        <td>NumericUpDown</td>
+        <td>Min: <code>2</code>, Max: <code>8</code>, Value: <code>4</code>, TextAlign: <code>Center</code></td>
+    </tr>
+    <tr>
+        <td><code>lblSizeNote</code></td>
+        <td>Label</td>
+        <td>Hiển thị cảnh báo số chẵn/lẻ theo thời gian thực (đỏ/xanh)</td>
+    </tr>
+    <tr>
+        <td><code>cboTheme</code></td>
+        <td>ComboBox</td>
+        <td>Chứa 5 chủ đề: Động vật, Công nghệ, Trái cây, Học thuật, Emoji</td>
+    </tr>
+    <tr>
+        <td rowspan="2"><strong>Chế độ mở rộng</strong></td>
+        <td><code>chkPreview</code></td>
+        <td>CheckBox</td>
+        <td>"Nhìn trước 2 giây khi bắt đầu" (mặc định tích chọn)</td>
+    </tr>
+    <tr>
+        <td><code>chkHardcore</code></td>
+        <td>CheckBox</td>
+        <td>"🔥 Hardcore (sai 1 bước = reset toàn bàn)" (dành cho Game 2)</td>
+    </tr>
+    <tr>
+        <td rowspan="2"><strong>Hành động</strong></td>
+        <td><code>btnStart</code></td>
+        <td>Button</td>
+        <td>Text: "▶ BẮT ĐẦU CHƠI" | BackColor: <code>RGB(52, 120, 246)</code></td>
+    </tr>
+    <tr>
+        <td><code>btnBackStep2</code></td>
+        <td>Button</td>
+        <td>Text: "← Quay lại" (Quay về pnlStep1)</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>GIAI ĐOẠN 3: THIẾT KẾ MÀN CHƠI CHÍNH (FormGame)</h2>
+
+<h3>1. Kéo thả Header Dashboard (pnlHeader)</h3>
+<p>Panel trên cùng gắn chặt vào đầu Form (<code>Dock = Top</code>, Chiều cao: <code>115px</code>, Nền trắng <code>White</code>, Viền: <code>FixedSingle</code>):</p>
+<ul>
+    <li><code>lblMode</code> &amp; <code>lblLevel</code>: Hiển thị chế độ chơi hiện tại và Cấp độ ma trận.</li>
+    <li><code>lblStatus</code> &amp; <code>lblScore</code>: Hiển thị số cặp đã ghép (Game 1) / số tiếp theo (Game 2) và điểm số.</li>
+    <li><code>lblTime</code>: Hiển thị thời gian còn lại (chuyển sang màu đỏ khi còn &le; 5 giây). <strong>Anchor: Top, Right</strong>.</li>
+    <li><code>btnRestart</code> &amp; <code>btnBack</code>: Nút chơi lại và thoát về menu. <strong>Anchor: Top, Right</strong>.</li>
+    <li><code>prgTime</code> (ProgressBar): Thanh thời gian trực quan. <strong>Anchor: Bottom, Left, Right</strong>.</li>
+</ul>
+
+<h3>2. Kéo thả Bàn Cờ (pnlBoard) &amp; 3 Timer</h3>
+<ul>
+    <li><code>pnlBoard</code> (Panel): Size: <code>620, 620</code>, Location: <code>(42, 135)</code>, <strong>Anchor = None</strong> để luôn nằm chính giữa. BackColor: <code>RGB(232, 238, 245)</code>.</li>
+    <li><code>tmrPreview</code>: Timer đếm 2000ms (2 giây) nhìn trước các mặt thẻ.</li>
+    <li><code>tmrCountdown</code>: Timer đếm ngược 1000ms (1 giây) trừ dần thời gian còn lại.</li>
+    <li><code>tmrFlipBack</code>: Timer 600ms chờ người chơi quan sát khi lật sai trước khi úp thẻ lại.</li>
+</ul>
+
+<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+<h2>GIAI ĐOẠN 4: CHI TIẾT LOGIC CODE & THUẬT TOÁN</h2>
+
+<h3>1. Thuật toán Fisher-Yates xáo trộn thẻ bài</h3>
+<p>Tạo danh sách giá trị và đảo vị trí ngẫu nhiên không thiên lệch:</p>
+<pre><code>private List&lt;int&gt; GenerateShuffledValues(int totalCards)
+{
+    List&lt;int&gt; values = new List&lt;int&gt;();
+    if (currentMode == GameMode.MemoryMatch)
+    {
+        int pairCount = totalCards / 2;
+        for (int i = 1; i &lt;= pairCount; i++)
+        {
+            values.Add(i);
+            values.Add(i); // Thêm theo cặp
+        }
+    }
+    else
+    {
+        for (int i = 1; i &lt;= totalCards; i++)
+            values.Add(i); // Dãy số liên tục 1, 2, ..., N
+    }
+
+    // Fisher-Yates Shuffle
+    for (int i = values.Count - 1; i &gt; 0; i--)
+    {
+        int swapIndex = rng.Next(i + 1);
+        int temp = values[i];
+        values[i] = values[swapIndex];
+        values[swapIndex] = temp;
+    }
+    return values;
+}</code></pre>
+
+<h3>2. Công thức tính kích thước và sinh thẻ động</h3>
+<pre><code>int spacing = 6;
+int cardWidth = (pnlBoard.Width - spacing * (cols + 1)) / cols;
+int cardHeight = (pnlBoard.Height - spacing * (rows + 1)) / rows;
+float fontSize = Math.Max(10f, Math.Min(cardWidth, cardHeight) / 3f);
+
+for (int r = 0; r &lt; rows; r++)
+{
+    for (int c = 0; c &lt; cols; c++)
+    {
+        Button btnCard = new Button();
+        btnCard.Width = cardWidth;
+        btnCard.Height = cardHeight;
+        btnCard.Left = spacing + c * (cardWidth + spacing);
+        btnCard.Top = spacing + r * (cardHeight + spacing);
+
+        btnCard.Tag = cardValues[index++]; // Lưu giá trị ô vào Tag
+        btnCard.Font = new Font("Segoe UI Emoji", fontSize, FontStyle.Bold);
+        btnCard.FlatStyle = FlatStyle.Flat;
+        btnCard.FlatAppearance.BorderSize = 1;
+        btnCard.FlatAppearance.BorderColor = Color.SteelBlue;
+        btnCard.Cursor = Cursors.Hand;
+
+        btnCard.Click += Card_Click;
+        pnlBoard.Controls.Add(btnCard);
+    }
+}</code></pre>
+
+<div class="page-break"></div>
+
+<h3>3. Chi tiết xử lý Logic từng Game</h3>
+
+<div class="callout">
+    <div class="callout-title">🧠 GAME 1: LẬT THẺ GHÉP CẶP TRÍ NHỚ (Memory Match)</div>
+    <ul>
+        <li><strong>Lần click 1</strong>: Lưu lại <code>firstCard = clickedCard;</code></li>
+        <li><strong>Lần click 2</strong>: Gán <code>secondCard = clickedCard;</code> và so sánh:
+            <ul>
+                <li><strong>Khớp (Tag trùng nhau)</strong>: Đổi <code>BackColor = Color.LightGreen</code>, <code>Enabled = false</code>, cộng <code>+25 điểm</code>, tăng biến <code>pairsFound++</code>. Kiểm tra nếu ghép đủ 100% thì thắng màn và tăng cấp độ.</li>
+                <li><strong>Không khớp</strong>: Trừ <code>-5 điểm</code>, khóa bàn chơi <code>isBusy = true</code>, kích hoạt <code>tmrFlipBack</code> (600ms) để úp 2 thẻ lại.</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<pre><code>private void HandleMemoryMatch(Button clickedCard)
+{
+    if (firstCard == null)
+    {
+        firstCard = clickedCard;
+        return;
+    }
+    secondCard = clickedCard;
+
+    if ((int)firstCard.Tag == (int)secondCard.Tag)
+    {
+        firstCard.BackColor = Color.LightGreen;
+        secondCard.BackColor = Color.LightGreen;
+        firstCard.Enabled = false;
+        secondCard.Enabled = false;
+        firstCard = null;
+        secondCard = null;
+
+        pairsFound++;
+        score += 25;
+        UpdateStatusLabel();
+
+        if (pairsFound == (rows * cols) / 2)
+        {
+            tmrCountdown.Stop();
+            AdvanceToNextLevel();
+        }
+    }
+    else
+    {
+        score = Math.Max(0, score - 5);
+        UpdateStatusLabel();
+        isBusy = true;
+        tmrFlipBack.Interval = 600;
+        tmrFlipBack.Start();
+    }
+}</code></pre>
+
+<div class="callout" style="border-left-color: #10b981; background-color: #ecfdf5;">
+    <div class="callout-title" style="color: #065f46;">🔢 GAME 2: LẬT THẺ TIẾN LÊN THEO THỨ TỰ (Sequential Order)</div>
+    <ul>
+        <li>So sánh <code>(int)clickedCard.Tag == expectedNumber</code>:
+            <ul>
+                <li><strong>Đúng thứ tự</strong>: Đổi <code>BackColor = Color.LightGreen</code>, <code>Enabled = false</code>. Cộng <code>+10 điểm</code> cho số 1, <code>+5 điểm</code> cho số tiếp theo, hoặc thưởng chuỗi liên tiếp <code>+(5 + combo)</code>. Tăng <code>expectedNumber++</code>. Kiểm tra nếu đạt số cuối thì thắng màn.</li>
+                <li><strong>Sai thứ tự</strong>: Trừ <code>-3 điểm</code>, reset chuỗi liên tiếp về 0, đổi màu thẻ bấm sai sang <code>Color.LightCoral</code> (đỏ nhạt). Chờ 600ms qua <code>tmrFlipBack</code>:
+                    <ul>
+                        <li><em>Nếu bật Hardcore</em>: Úp toàn bộ bàn cờ về số 1!</li>
+                        <li><em>Nếu chơi thường</em>: Úp lại thẻ bấm sai và lùi lại 2 bước đã lật đúng gần nhất.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<pre><code>private void HandleSequentialOrder(Button clickedCard)
+{
+    int cardValue = (int)clickedCard.Tag;
+    if (cardValue == expectedNumber)
+    {
+        clickedCard.BackColor = Color.LightGreen;
+        clickedCard.Enabled = false;
+        consecutiveCorrect++;
+
+        if (expectedNumber == 1) score += 10;
+        else if (consecutiveCorrect &gt;= 2) score += (5 + consecutiveCorrect);
+        else score += 5;
+
+        expectedNumber++;
+        UpdateStatusLabel();
+
+        if (expectedNumber &gt; (rows * cols))
+        {
+            tmrCountdown.Stop();
+            AdvanceToNextLevel();
+        }
+    }
+    else
+    {
+        score = Math.Max(0, score - 3);
+        consecutiveCorrect = 0;
+        UpdateStatusLabel();
+
+        clickedCard.BackColor = Color.LightCoral;
+        firstCard = clickedCard;
+        isBusy = true;
+        tmrFlipBack.Interval = 600;
+        tmrFlipBack.Start();
+    }
+}</code></pre>
+
+<div class="page-break"></div>
+
+<h3>4. Tự động nâng cấp độ và mở rộng ma trận (AdvanceToNextLevel)</h3>
+<pre><code>private void AdvanceToNextLevel()
+{
+    MessageBox.Show($"🎉 Chúc mừng! Bạn đã hoàn thành Cấp độ {currentLevel}!\nĐiểm số: {score}");
+    currentLevel++;
+
+    // Tự động mở rộng dòng hoặc cột
+    if (rows &lt; cols) rows++;
+    else cols++;
+
+    // Game 1: Bắt buộc tổng số ô chẵn
+    if (currentMode == GameMode.MemoryMatch &amp;&amp; (rows * cols) % 2 != 0)
+        cols++;
+
+    if (rows &gt; 8) rows = 8;
+    if (cols &gt; 8) cols = 8;
+
+    InitializeBoard(); // Dựng lại bàn chơi mới
+}</code></pre>
+
+<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+<h2>GIAI ĐOẠN 5: BẢNG MÃ MÀU & NGUYÊN TẮC CÂN CHỈNH UI HIỆN ĐẠI</h2>
+
+<table>
+    <tr>
+        <th>Thành phần Giao diện</th>
+        <th>Mã Màu (RGB / Constant)</th>
+        <th>Hiển thị Mẫu</th>
+        <th>Mục đích sử dụng</th>
+    </tr>
+    <tr>
+        <td><strong>Nền Form chính</strong></td>
+        <td><code>RGB(247, 250, 253)</code></td>
+        <td><span class="badge" style="background:#f7fafd; color:#333; border:1px solid #ccc;">#F7FAFD</span></td>
+        <td>Xanh khói sáng, tạo cảm giác sang trọng, không chói lóa</td>
+    </tr>
+    <tr>
+        <td><strong>Nền Bàn Cờ (pnlBoard)</strong></td>
+        <td><code>RGB(232, 238, 245)</code></td>
+        <td><span class="badge" style="background:#e8eef5; color:#333; border:1px solid #ccc;">#E8EEF5</span></td>
+        <td>Tạo độ tương phản và chiều sâu cho các thẻ bài</td>
+    </tr>
+    <tr>
+        <td><strong>Thẻ úp bài (HideCard)</strong></td>
+        <td><code>Color.SteelBlue</code> (70, 130, 180)</td>
+        <td><span class="badge badge-blue">SteelBlue</span></td>
+        <td>Mặt lưng thẻ bài với ký tự "?" màu trắng</td>
+    </tr>
+    <tr>
+        <td><strong>Thẻ lật đúng</strong></td>
+        <td><code>Color.LightGreen</code></td>
+        <td><span class="badge badge-green">LightGreen</span></td>
+        <td>Đánh dấu ô đã hoàn thành xuất sắc</td>
+    </tr>
+    <tr>
+        <td><strong>Thẻ lật sai</strong></td>
+        <td><code>Color.LightCoral</code></td>
+        <td><span class="badge badge-red">LightCoral</span></td>
+        <td>Cảnh báo trực quan nhẹ nhàng khi ấn nhầm thứ tự</td>
+    </tr>
+    <tr>
+        <td><strong>Nút Primary (Bắt đầu, Trí nhớ)</strong></td>
+        <td><code>RGB(52, 120, 246)</code></td>
+        <td><span class="badge badge-blue">#3478F6</span></td>
+        <td>Nút hành động chính chuẩn Apple/Modern UI</td>
+    </tr>
+    <tr>
+        <td><strong>Nút Thành công (Chế độ số, Dễ)</strong></td>
+        <td><code>RGB(76, 175, 80)</code></td>
+        <td><span class="badge badge-green">#4CAF50</span></td>
+        <td>Màu Material Green tạo cảm giác tích cực, dễ chịu</td>
+    </tr>
+    <tr>
+        <td><strong>Nút Khó</strong></td>
+        <td><code>RGB(244, 67, 54)</code></td>
+        <td><span class="badge badge-red">#F44336</span></td>
+        <td>Màu Material Red cảnh báo độ khó cao</td>
+    </tr>
+</table>
+
+<h3>3 Bí quyết Cân chỉnh Nút bấm Chuyên nghiệp:</h3>
+<ol>
+    <li><strong>Loại bỏ hoàn toàn viền 3D cổ điển</strong>: Luôn đặt <code>FlatStyle = FlatStyle.Flat</code> và <code>FlatAppearance.BorderSize = 0</code> (hoặc <code>1</code> với màu viền tinh tế như <code>Color.SteelBlue</code>).</li>
+    <li><strong>Con trỏ chuột tương tác</strong>: Đặt <code>Cursor = Cursors.Hand</code> cho mọi thẻ bài và nút bấm để tạo cảm giác phản hồi tự nhiên cho người dùng.</li>
+    <li><strong>Font chữ Unicode sắc nét</strong>: Sử dụng phông <code>Segoe UI Emoji</code> với kích cỡ động <code>Math.Max(10f, Math.Min(w, h) / 3f)</code> để các icon động vật, hoa quả luôn tự căn chỉnh vừa vặn với từng ô cờ.</li>
+</ol>
+
+</body>
+</html>

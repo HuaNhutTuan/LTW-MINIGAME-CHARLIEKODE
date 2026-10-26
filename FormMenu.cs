@@ -12,16 +12,61 @@ namespace game_lật_thẻ_1._1
         {
             InitializeComponent();
 
+            try
+            {
+                // Khởi tạo tài nguyên ảnh & âm thanh an toàn
+                CardImageManager.InitializeImages();
+                SoundManager.InitializeSounds();
+                SoundManager.PlayBgm();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Cảnh báo nạp tài nguyên ban đầu: " + ex.Message,
+                    "Thông Báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
             if (cboTheme.Items.Count > 0)
-                cboTheme.SelectedIndex = 0;
+                cboTheme.SelectedIndex = 0; // "Hình ảnh thẻ bài"
 
             if (cboTimeLimit.Items.Count > 0)
                 cboTimeLimit.SelectedIndex = 1; // Mặc định: 1 phút
+
+            UpdateSoundButtonText();
 
             // Bước 1 hiển thị, bước 2 ẩn
             pnlStep1.Visible = true;
             pnlStep1.BringToFront();
             pnlStep2.Visible = false;
+        }
+
+        private void UpdateSoundButtonText()
+        {
+            btnSoundMenu.Text = SoundManager.IsMuted ? "🔇 Âm thanh: Tắt" : "🔊 Âm thanh: Bật";
+        }
+
+        private void btnSoundMenu_Click(object sender, EventArgs e)
+        {
+            SoundManager.ToggleMute();
+            UpdateSoundButtonText();
+            if (!SoundManager.IsMuted)
+            {
+                SoundManager.PlayBgm();
+            }
+        }
+
+        private void btnLeaderboardMenu_Click(object sender, EventArgs e)
+        {
+            FormLeaderboard frmLeaderboard = new FormLeaderboard();
+            frmLeaderboard.ShowDialog(this);
+        }
+
+        private void btnAboutMenu_Click(object sender, EventArgs e)
+        {
+            FormAbout frmAbout = new FormAbout();
+            frmAbout.ShowDialog(this);
         }
 
         // ============================
@@ -30,42 +75,42 @@ namespace game_lật_thẻ_1._1
 
         private void btnModeMemory_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
             selectedMode = GameMode.MemoryMatch;
             GoToStep2();
         }
 
         private void btnModeSequence_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
             selectedMode = GameMode.SequentialOrder;
             GoToStep2();
         }
 
         private void GoToStep2()
         {
-            // Cập nhật tiêu đề bước 2 theo chế độ đã chọn
+            string playerText = rdoTwoPlayers.Checked ? " (ĐỐI KHÁNG 2 NGƯỜI)" : " (1 NGƯỜI CHƠI)";
+
             if (selectedMode == GameMode.MemoryMatch)
             {
-                lblChosenMode.Text = "🧠 Chế độ: Lật Thẻ Trí Nhớ";
+                lblChosenMode.Text = "🧠 Chế độ: Lật Thẻ Trí Nhớ" + playerText;
                 chkHardcore.Enabled = false;
                 chkHardcore.Checked = false;
                 chkHardcore.Visible = false;
 
-                // Hiện thanh chọn chủ đề cho game Trí nhớ
                 lblTheme.Visible = true;
                 cboTheme.Visible = true;
 
-                // Đặt mặc định cho Memory (phải chẵn)
                 numRows.Value = 4;
                 numCols.Value = 4;
             }
             else
             {
-                lblChosenMode.Text = "🔢 Chế độ: Lật Thẻ Theo Thứ Tự";
+                lblChosenMode.Text = "🔢 Chế độ: Lật Thẻ Theo Thứ Tự" + playerText;
                 chkHardcore.Enabled = true;
                 chkHardcore.Visible = true;
                 chkHardcore.Text = "🔥 Hardcore (sai 1 bước = reset toàn bàn về số 1)";
 
-                // Ẩn thanh chọn chủ đề (game thứ tự chỉ hiện số, không cần theme)
                 lblTheme.Visible = false;
                 cboTheme.Visible = false;
 
@@ -87,6 +132,7 @@ namespace game_lật_thẻ_1._1
 
         private void btnEasy_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
             if (selectedMode == GameMode.MemoryMatch)
             {
                 numRows.Value = 3;
@@ -101,19 +147,21 @@ namespace game_lật_thẻ_1._1
 
         private void btnMedium_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
             numRows.Value = 4;
             numCols.Value = 4;
         }
 
         private void btnHard_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
             numRows.Value = 6;
             numCols.Value = 6;
         }
 
         private void btnBackStep2_Click(object sender, EventArgs e)
         {
-            // Quay lại bước 1
+            SoundManager.PlayFlip();
             pnlStep2.Visible = false;
             pnlStep1.Visible = true;
             pnlStep1.BringToFront();
@@ -152,14 +200,17 @@ namespace game_lật_thẻ_1._1
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            SoundManager.PlayFlip();
+
             int rows = (int)numRows.Value;
             int cols = (int)numCols.Value;
-            string selectedTheme = cboTheme.SelectedItem?.ToString() ?? "Động vật";
+            string selectedTheme = cboTheme.SelectedItem?.ToString() ?? "Hình ảnh thẻ bài";
             bool enablePreview = chkPreview.Checked;
             bool isHardcore = chkHardcore.Checked && selectedMode == GameMode.SequentialOrder;
+            PlayerMode playerMode = rdoTwoPlayers.Checked ? PlayerMode.TwoPlayers : PlayerMode.SinglePlayer;
 
             // Lấy thời gian đã chọn (0 = vô hạn)
-            int timeLimitSeconds = 60; // Mặc định 1 phút
+            int timeLimitSeconds = 60;
             string timeChoice = cboTimeLimit.SelectedItem?.ToString() ?? "1 phút";
             switch (timeChoice)
             {
@@ -181,10 +232,24 @@ namespace game_lật_thẻ_1._1
                 return;
             }
 
-            FormGame frmGame = new FormGame(selectedMode, rows, cols, selectedTheme, enablePreview, isHardcore, timeLimitSeconds);
+            // Chế độ đối kháng chỉ hỗ trợ ghép cặp Trí nhớ
+            if (playerMode == PlayerMode.TwoPlayers && selectedMode != GameMode.MemoryMatch)
+            {
+                MessageBox.Show(
+                    "Chế độ Đối kháng 2 người chơi hiện áp dụng cho luật chơi 'Ghép cặp Trí Nhớ'!",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                selectedMode = GameMode.MemoryMatch;
+            }
+
+            FormGame frmGame = new FormGame(selectedMode, rows, cols, selectedTheme, enablePreview, isHardcore, timeLimitSeconds, playerMode);
             this.Hide();
             frmGame.ShowDialog();
             this.Show();
+
+            // Cập nhật lại trạng thái âm thanh sau khi từ FormGame trở về
+            UpdateSoundButtonText();
 
             // Reset về bước 1 khi quay lại menu
             pnlStep2.Visible = false;
