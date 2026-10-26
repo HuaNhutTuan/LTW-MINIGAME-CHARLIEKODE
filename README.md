@@ -27,7 +27,7 @@ Trò chơi đánh giá toàn diện các kỹ năng:
 
 | STT | Họ và Tên | Mã Số Sinh Viên (MSSV) | Lớp Học Phần | Nhiệm Vụ Phụ Trách |
 | :---: | :--- | :---: | :---: | :--- |
-| **1** | **Hứa Nhứt Tuấn** | *[Cập nhật MSSV]* | *[Cập nhật Lớp]* | Thiết kế Game Logic, Thuật toán Shuffle, Timer, UI Game, Chế độ Đối Kháng |
+| **1** | **Hứa Nhựt Tuấn** | *51.01.104.114* | *2611COMP101901* | Thiết kế Game Logic, Thuật toán Shuffle, Timer, UI Game, Chế độ Đối Kháng |
 | **2** | **Thành viên 2** | *[Cập nhật MSSV]* | *[Cập nhật Lớp]* | Bảng thành tích (System.IO), Xử lý Âm thanh & Hình ảnh, Exception Handling |
 
 ---
