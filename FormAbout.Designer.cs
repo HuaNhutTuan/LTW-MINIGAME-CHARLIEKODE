@@ -145,7 +145,8 @@ namespace game_lật_thẻ_1._1
             this.txtTeam.TabIndex = 0;
             this.txtTeam.Text = "ĐỒ ÁN PHÁT TRIỂN MINIGAME TRÊN MÔI TRƯỜNG WINDOWS\n" +
                 "Môn học: Lập Trình Trên Môi Trường Windows (LTWIN)\n" +
-                "Đề tài: MiniGame Lật Thẻ Trí Nhớ (Memory Card Game)\n\n" +
+                "Đề tài: MiniGame Lật Thẻ Trí Nhớ (Memory Card Game)\n" +
+                "Nhóm thực hiện: CHARLIEKODE\n\n" +
                 "═══════════════════════════════════════════════════════════════\n" +
                 "THÔNG TIN SINH VIÊN THỰC HIỆN:\n" +
                 "═══════════════════════════════════════════════════════════════\n\n" +
