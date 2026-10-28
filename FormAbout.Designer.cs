@@ -150,14 +150,18 @@ namespace game_lật_thẻ_1._1
                 "═══════════════════════════════════════════════════════════════\n" +
                 "THÔNG TIN SINH VIÊN THỰC HIỆN:\n" +
                 "═══════════════════════════════════════════════════════════════\n\n" +
-                "1. Sinh viên 1: [Họ và Tên Sinh Viên 1]\n" +
-                "   • Mã số sinh viên: [MSSV 1]\n" +
-                "   • Lớp: [Lớp học phần]\n" +
-                "   • Nhiệm vụ: Xây dựng Game Logic, Thuật toán Shuffle, Timer, UI Game\n\n" +
-                "2. Sinh viên 2: [Họ và Tên Sinh Viên 2]\n" +
-                "   • Mã số sinh viên: [MSSV 2]\n" +
-                "   • Lớp: [Lớp học phần]\n" +
-                "   • Nhiệm vụ: Bảng thành tích (System.IO), Xử lý Âm thanh & Hình ảnh, Exception Handling\n\n" +
+                "1. Hứa Nhựt Tuấn (Trưởng nhóm)\n" +
+                "   • MSSV: 51.01.104.114 | Lớp: 2611COMP101901\n" +
+                "   • Nhiệm vụ: Thiết kế Game Logic, Chế độ Đối Kháng 2 người chơi, Tạm dừng & Điều phối Luồng\n\n" +
+                "2. Lê Văn Gia Bảo\n" +
+                "   • MSSV: 51.01.104.007 | Lớp: 2611COMP101901\n" +
+                "   • Nhiệm vụ: Nâng cấp Âm thanh MCI đa kênh (winmm.dll), Quản lý Assets & Bẫy lỗi\n\n" +
+                "3. Huỳnh Phú Vinh\n" +
+                "   • MSSV: 51.01.104.120 | Lớp: 2611COMP101901\n" +
+                "   • Nhiệm vụ: Thuật toán Shuffle Fisher-Yates, Quản lý Timers, Tối ưu giao diện bàn cờ\n\n" +
+                "4. Nguyễn Đăng Khoa\n" +
+                "   • MSSV: 51.01.104.045 | Lớp: 2611COMP101901\n" +
+                "   • Nhiệm vụ: Bảng thành tích (System.IO), Form Leaderboard & Hộp thoại lưu điểm\n\n" +
                 "═══════════════════════════════════════════════════════════════\n" +
                 "Công nghệ sử dụng:\n" +
                 "• Ngôn ngữ: C# (.NET Framework 4.7.2)\n" +
