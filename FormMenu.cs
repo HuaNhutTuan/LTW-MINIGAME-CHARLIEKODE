@@ -259,7 +259,14 @@ namespace game_lật_thẻ_1._1
 
         private void btnExit_Click(object sender, EventArgs e)
         {
+            SoundManager.CloseAll();
             Application.Exit();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            SoundManager.CloseAll();
+            base.OnFormClosing(e);
         }
     }
 }

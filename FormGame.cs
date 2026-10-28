@@ -885,6 +885,7 @@ namespace game_lật_thẻ_1._1
                 tmrCountdown.Stop();
                 tmrPreview.Stop();
                 tmrFlipBack.Stop();
+                SoundManager.PauseBgm();
 
                 btnPause.Text = "▶ Tiếp tục";
                 btnPause.BackColor = Color.FromArgb(220, 252, 231);
@@ -896,6 +897,7 @@ namespace game_lật_thẻ_1._1
             else
             {
                 pnlPauseOverlay.Visible = false;
+                SoundManager.ResumeBgm();
 
                 btnPause.Text = "⏸ Tạm dừng";
                 btnPause.BackColor = Color.FromArgb(254, 243, 199);
