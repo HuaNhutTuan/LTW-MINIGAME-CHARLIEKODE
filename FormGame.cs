@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace game_lật_thẻ_1._1
 {
@@ -274,9 +275,9 @@ namespace game_lật_thẻ_1._1
                         btnCard.Tag = cardValues[index++];
                         btnCard.Font = new Font("Segoe UI Emoji", fontSize, FontStyle.Bold);
                         btnCard.FlatStyle = FlatStyle.Flat;
-                        btnCard.FlatAppearance.BorderSize = 1;
-                        btnCard.FlatAppearance.BorderColor = Color.SteelBlue;
+                        btnCard.FlatAppearance.BorderSize = 0;
                         btnCard.Cursor = Cursors.Hand;
+                        btnCard.Paint += BtnCard_Paint;
 
                         if (enablePreview)
                         {
@@ -462,6 +463,100 @@ namespace game_lật_thẻ_1._1
             }
         }
 
+        // Quản lý nạp và cache hình ảnh Emoji PNG từ thư mục assets/emojis/
+        private static readonly Dictionary<string, Image> emojiCache = new Dictionary<string, Image>();
+
+        private Image GetEmojiImage(string emoji)
+        {
+            if (string.IsNullOrEmpty(emoji)) return null;
+
+            if (emojiCache.TryGetValue(emoji, out Image cached))
+                return cached;
+
+            try
+            {
+                int cp = char.ConvertToUtf32(emoji, 0);
+                string hex = cp.ToString("x");
+
+                string[] folders = { "animals", "fruits", "tech", "fun" };
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                foreach (string folder in folders)
+                {
+                    string dirPath = Path.Combine(baseDir, "assets", "emojis", folder);
+                    if (!Directory.Exists(dirPath))
+                    {
+                        string parentDir = Directory.GetParent(baseDir)?.Parent?.FullName;
+                        if (parentDir != null)
+                        {
+                            dirPath = Path.Combine(parentDir, "assets", "emojis", folder);
+                        }
+                    }
+
+                    if (Directory.Exists(dirPath))
+                    {
+                        string path = Path.Combine(dirPath, hex + ".png");
+                        if (File.Exists(path))
+                        {
+                            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                Image img = new Bitmap(Image.FromStream(stream));
+                                emojiCache[emoji] = img;
+                                return img;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception) { }
+
+            emojiCache[emoji] = null;
+            return null;
+        }
+
+        // Vẽ viền hiệu ứng 3D Arcade Playful cho thẻ bài
+        private void BtnCard_Paint(object sender, PaintEventArgs e)
+        {
+            try
+            {
+                if (sender is Button btn)
+                {
+                    Graphics g = e.Graphics;
+                    int w = btn.Width;
+                    int h = btn.Height;
+
+                    if (btn.BackColor == Color.FromArgb(41, 128, 185) || btn.BackColor == Color.FromArgb(79, 70, 229))
+                    {
+                        using (Pen lightPen = new Pen(Color.FromArgb(129, 140, 248), 3))
+                        {
+                            g.DrawLine(lightPen, 0, 1, w - 1, 1);
+                            g.DrawLine(lightPen, 1, 0, 1, h - 1);
+                        }
+                        using (Pen darkPen = new Pen(Color.FromArgb(55, 48, 163), 4))
+                        {
+                            g.DrawLine(darkPen, 0, h - 2, w - 1, h - 2);
+                            g.DrawLine(darkPen, w - 2, 0, w - 2, h - 1);
+                        }
+                    }
+                    else if (btn.BackColor == Color.FromArgb(209, 250, 229) || btn.BackColor == Color.FromArgb(220, 252, 231))
+                    {
+                        using (Pen greenBorder = new Pen(Color.FromArgb(16, 185, 129), 3))
+                        {
+                            g.DrawRectangle(greenBorder, 1, 1, w - 3, h - 3);
+                        }
+                    }
+                    else if (btn.BackColor == Color.White)
+                    {
+                        using (Pen subtleBorder = new Pen(Color.FromArgb(203, 213, 225), 2))
+                        {
+                            g.DrawRectangle(subtleBorder, 1, 1, w - 2, h - 2);
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
         // Lật ngửa thẻ
         private void ShowCard(Button card)
         {
@@ -478,29 +573,43 @@ namespace game_lật_thẻ_1._1
                 }
                 else
                 {
-                    // Chế độ Trí nhớ: Thử lấy ảnh thẻ từ CardImageManager
-                    Image cardImg = CardImageManager.GetCardImage(val);
-                    if (cardImg != null && (theme == "Hình ảnh thẻ bài" || theme == "Động vật"))
+                    if (theme == "Hình ảnh thẻ bài")
                     {
-                        card.Image = new Bitmap(cardImg, new Size(Math.Max(20, card.Width - 10), Math.Max(20, card.Height - 10)));
-                        card.ImageAlign = ContentAlignment.MiddleCenter;
+                        Image cardImg = CardImageManager.GetCardImage(val);
+                        if (cardImg != null)
+                        {
+                            card.Image = new Bitmap(cardImg, new Size(Math.Max(20, card.Width - 10), Math.Max(20, card.Height - 10)));
+                            card.ImageAlign = ContentAlignment.MiddleCenter;
+                            card.Text = "";
+                            return;
+                        }
+                    }
+
+                    // Các chủ đề khác: Ưu tiên nạp hình ảnh Emoji PNG từ assets/emojis/
+                    string[] activeIcons = GetActiveIcons();
+                    int iconIndex = (val - 1) % activeIcons.Length;
+                    string iconText = activeIcons[iconIndex];
+
+                    Image emojiImg = GetEmojiImage(iconText);
+                    if (emojiImg != null)
+                    {
                         card.Text = "";
+                        int imgW = Math.Max(16, card.Width - 14);
+                        int imgH = Math.Max(16, card.Height - 14);
+                        card.Image = new Bitmap(emojiImg, new Size(imgW, imgH));
+                        card.ImageAlign = ContentAlignment.MiddleCenter;
                     }
                     else
                     {
-                        // Fallback sang icon text
                         card.Image = null;
-                        string[] activeIcons = GetActiveIcons();
-                        int iconIndex = (val - 1) % activeIcons.Length;
-                        card.Text = activeIcons[iconIndex];
+                        card.Text = iconText;
                     }
                 }
             }
             catch (Exception)
             {
-                // Fallback an toàn nếu có lỗi
                 card.Image = null;
-                card.Text = card.Tag.ToString();
+                card.Text = card.Tag?.ToString() ?? "?";
             }
         }
 
